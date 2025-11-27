@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bash
+# Backend API service
+
+# Ensure proper permissions on data directories
+chown -R abc:abc /data /output /input /app/backend/src/logs 2>/dev/null || true
+
+# Initialize database as the abc user (same user that runs the app)
+cd /app/backend
+s6-setuidgid abc python3.12 scripts/init_db.py || {
+  echo "WARNING: Database initialization failed or incomplete"
+  echo "Attempting to fix permissions..."
+  chown -R abc:abc /data
+  s6-setuidgid abc python3.12 scripts/init_db.py || echo "ERROR: Database initialization failed"
+}
+
+# Run uvicorn with proper settings
+exec s6-setuidgid abc \
+  python3.12 -m uvicorn src.main:app \
+  --host ${API_HOST:-0.0.0.0} \
+  --port ${API_PORT:-8000} \
+  --workers ${API_WORKERS:-1} \
+  --log-level ${LOG_LEVEL:-info} \
+  --ws none

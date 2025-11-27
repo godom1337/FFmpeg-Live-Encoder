@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+# Nginx web server
+
+# Ensure log directory exists
+mkdir -p /var/log/nginx
+
+# Start nginx in foreground
+exec nginx -g "daemon off;"

@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  encoder:
+    build: .
+    image: ffmpeg-encoder:latest
+    container_name: ffmpeg-encoder
+    ports:
+      - "8000:8000"  # API
+      - "80:80"      # Nginx (HLS streaming)
+      - "8001:8001"  # Nginx (Frontend)
+    volumes:
+      - ./data:/data          # Database storage
+      - ./output:/output      # HLS output files
+      - ./input:/input:ro     # Input media files (read-only)
+      - ./logs:/app/backend/src/logs  # Application logs
+    environment:
+      # API Configuration
+      - API_HOST=0.0.0.0              # API bind address
+      - API_PORT=8000                 # API port
+      - API_WORKERS=4                 # Number of API worker processes
+
+      # Database Configuration
+      - DB_PATH=/data/jobs.db         # Main database path
+      - ARCHIVES_DB_PATH=/data/archives.db  # Archives database path
+      - DB_WAL_MODE=true              # Enable SQLite WAL mode for better concurrency
+
+      # HLS Streaming Configuration
+      - HLS_BASE_URL=http://localhost       # Base URL for HLS content
+      - HLS_URL=http://localhost/hls        # Full HLS URL (change to your domain in production)
+
+      # Encoding Configuration
+      - MAX_CONCURRENT_JOBS=10        # Maximum simultaneous encoding jobs
+      - DEFAULT_SEGMENT_DURATION=6    # HLS segment duration in seconds
+      - DEFAULT_PLAYLIST_SIZE=10      # Number of segments in HLS playlist
+
+      # Monitoring Configuration
+      - STATS_UPDATE_INTERVAL=5       # Stats update interval in seconds
+      - STATS_RETENTION_HOURS=1       # How long to retain stats data
+
+      # System Configuration
+      - AUTO_RESTART_JOBS_ON_BOOT=false  # Restart running jobs after container restart
+
+      # Path Configuration
+      - INPUT_PATH=/input             # Input files directory
+      - OUTPUT_PATH=/output           # Output files directory
+      - DATA_PATH=/data               # Data storage directory
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/system/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  encoder_data:
+  encoder_output:

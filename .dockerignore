@@ -1,0 +1,65 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+*.cover
+*.log
+.pytest_cache/
+htmlcov/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.svelte-kit/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+/output/
+/input/
+/data/
+*.db
+*.sqlite
+
+# Documentation
+*.md
+!README.md
+docs/
+specs/
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
