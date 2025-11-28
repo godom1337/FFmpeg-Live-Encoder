@@ -103,7 +103,7 @@ npm install
 npm run dev
 ```
 
-### Option 3: Use run_local.sh script  *** TESTED on OSX ONLY ****
+### Option 3: Use run_local.sh script
 
 ```bash
 run ./run_local.sh
